@@ -42,6 +42,8 @@ class Server extends EventEmitter {
       // streamClose: this.options.streamClose,
       // streamAttrs: this.options.streamAttrs,
     })
+    socket.connection = connection
+    connection.server = this
     Object.keys(this.plugins).forEach(name => {
       const plugin = this.plugins[name]
       // Ignore browserify stubs
@@ -50,10 +52,8 @@ class Server extends EventEmitter {
       }
       connection.plugin(plugin)
     })
-    socket.connection = connection
-    connection.server = this
     this.emit('connection', connection)
-    connection.accept(socket)
+    connection.open({ socket })
   }
 
   listen(port, host, fn) {
